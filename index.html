@@ -15,28 +15,41 @@
 			const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
 			camera.position.z = 5;
 
+			const render = () => {
+				renderer.render( scene, camera );
+			}
+			
+			const create_tv = () => {
+				// creates the tv
+
+				// tv body
+				const tv_body_geometry = new THREE.BoxGeometry( 7.1,4.1,0.3 );
+				const tv_body_material = new THREE.MeshBasicMaterial( { color: 0x161616 } );
+				const tv_body = new THREE.Mesh( tv_body_geometry, tv_body_material );
+				// tv screen with texture
+				const tv_screen_geometry = new THREE.PlaneGeometry( 6.7, 3.7 );
+				const tv_screen_texture = new THREE.TextureLoader().load('./images/wallpaper.png', render);
+				const tv_screen_material = new THREE.MeshBasicMaterial({ map: tv_screen_texture });
+				const tv_screen = new THREE.Mesh( tv_screen_geometry, tv_screen_material );
+				
+				tv_body.position.z = -0.16
+				tv_body.attach(tv_screen)
+				// console.log(tv_body)
+				return tv_body
+			}
+
+
 			const renderer = new THREE.WebGLRenderer();
 			renderer.setSize( window.innerWidth, window.innerHeight );
 			document.body.appendChild( renderer.domElement );
-
-			const tv_body_geometry = new THREE.BoxGeometry( 7,4,0.3 );
-			const tv_body_material = new THREE.MeshBasicMaterial( { color: 0x161616 } );
-			const tv_body = new THREE.Mesh( tv_body_geometry, tv_body_material );
-			scene.add( tv_body );
-
+			
 			const light = new THREE.AmbientLight( 0x404040 ); // soft white light
 			scene.add( light );
-
-			const tv_screen_geometry = new THREE.PlaneGeometry( 6.7, 3.7 );
-			const tv_screen_texture = new THREE.TextureLoader().load('./images/wallpaper.png');
-			const tv_screen_material = new THREE.MeshBasicMaterial({ map: tv_screen_texture });
-			const tv_screen = new THREE.Mesh( tv_screen_geometry, tv_screen_material );
-			// tv_screen.material.map.needsUpdate = true;
-			scene.add( tv_screen );
 			
-			tv_body.position.z = -0.16
+			const tv = create_tv ()
+			scene.add( tv )
 
-
+			// render()
 			renderer.render( scene, camera );
 			
 			document.onkeydown = (e) => {
@@ -59,19 +72,26 @@
 				}
 				renderer.render( scene, camera );
 			}
+			
+			var tv_anime_frame = 0
+			var skip = 0
+			const animate_tv_screen = () => {
+				if(skip == 5){
+					tv_anime_frame = (tv_anime_frame + 1) % 36
+					skip = 0
+				}
+				else{
+					skip++
+				}
 
-			// function animate() {
-			// 	requestAnimationFrame( animate );
+				requestAnimationFrame( animate_tv_screen );
+				
+				var imgSrc = './images/tobeyDance/_a_frm' + tv_anime_frame + ',60.png'
+				tv.children[0].material.map = new THREE.TextureLoader().load(imgSrc, render);
+			};
 
-			// 	tv_body.rotation.x += 0.005;
-			// 	tv_body.rotation.y += 0.005;
-			// 	tv_screen.rotation.x += 0.005;
-			// 	tv_screen.rotation.y += 0.005;
-
-			// 	renderer.render( scene, camera );
-			// };
-
-			// animate();
+			animate_tv_screen();
+			
 		</script>
 	</body>
 </html>
