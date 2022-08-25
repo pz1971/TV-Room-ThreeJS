@@ -56,11 +56,19 @@
 				e = e || window.event
 				if (e.keyCode == '38') {
 					// up arrow
-					camera.position.z -= 0.1 ;
+					
+					var direction = new THREE.Vector3();
+					camera.getWorldDirection( direction );
+					distance = 0.1;
+					camera.position.add( direction.multiplyScalar(distance) );
 				}
 				else if (e.keyCode == '40') {
 					// down arrow
-					camera.position.z += 0.1 ;
+					
+					var direction = new THREE.Vector3();
+					camera.getWorldDirection( direction );
+					distance = -0.1;
+					camera.position.add( direction.multiplyScalar(distance) );
 				}
 				else if (e.keyCode == '37') {
 				// left arrow
