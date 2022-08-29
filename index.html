@@ -62,7 +62,6 @@
 
       material.side = THREE.BackSide;
       const room = new THREE.Mesh(geometry, material);
-      room.position.z = 5;
       return room;
     };
 
@@ -195,13 +194,14 @@
     scene.add(bulbLight);
 
     render();
-
-    const limitLoX = -18;
-    const limitHiX = 18;
+    
+    // room limits
+    const limitLoX = -19;
+    const limitHiX = 19;
     const limitLoY = -7;
     const limitHiY = 7;
-    const limitLoZ = -15;
-    const limitHiZ = 17;
+    const limitLoZ = -19;
+    const limitHiZ = 19;
 
     const isInsideRoom = (x, y, z) => {
       // returns true if x,y,z positions located inside the room
