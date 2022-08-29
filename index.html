@@ -47,6 +47,8 @@
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap; // default THREE.PCFShadowMap
 
     const render = () => {
       renderer.render(scene, camera);
@@ -167,23 +169,30 @@
     const create_light = () => {
       // creates the light used for this scene, we're using pointlight
       bulbLight = new THREE.PointLight(0xffffff, 1, 100, 2);
+      bulbLight.castShadow = true
       return bulbLight;
     };
 
     const tv = create_tv();
     tv.castShadow = true;
+    tv.receiveShadow = true;
     scene.add(tv);
     tv.position.z = 1.5;
 
     const tv_stand = create_tv_stand();
     tv_stand.castShadow = true;
+    tv_stand.receiveShadow = true;
+    (tv_stand.children).forEach(elem => {
+      elem.castShadow = true;
+      elem.receiveShadow = true;
+    });
     scene.add(tv_stand);
 
     tv_stand.attach(tv);
     tv_stand.position.z -= 5;
 
     const room = create_room();
-    room.castShadow = true;
+    room.receiveShadow = true;
     scene.add(room);
 
     room.attach(tv_stand)
