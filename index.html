@@ -11,6 +11,25 @@
   </head>
   <body>
     <script src="node_modules\three\build\three.js"></script>
+
+    <script id="vertexShader" type="x-shader/x-vertex">
+      // projectionMatrix, modelViewMatrix, position -> passed in from Three.js
+      varying vec3 v_color;
+      void main()	{
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+          v_color = vec3(0,0,0);
+      }
+    </script>
+
+    <script id="fragmentShader" type="x-shader/x-fragment">
+
+      uniform float u_time;
+      varying vec3 v_color;
+      void main()	{
+          gl_FragColor = vec4(v_color, 1.0);
+      }
+    </script>
+
     <script>
       var vec = new THREE.Vector3(); // create once and reuse
       var pos = new THREE.Vector3(); // create once and reuse
@@ -50,9 +69,18 @@
 
         // tv body
         const tv_body_geometry = new THREE.BoxGeometry(7.1, 4.1, 0.3);
-        const tv_body_material = new THREE.MeshStandardMaterial({
-          color: 0x161616,
+        const tv_body_material = new THREE.ShaderMaterial({
+            vertexShader: document.getElementById('vertexShader').textContent,
+            fragmentShader: document.getElementById('fragmentShader').textContent
+
         });
+
+		
+		// const tv_body_material = new THREE.MeshStandardMaterial({
+        //   color: 0x161616,
+        // });
+
+
         const tv_body = new THREE.Mesh(tv_body_geometry, tv_body_material);
         // tv screen with texture
         const tv_screen_geometry = new THREE.PlaneGeometry(6.7, 3.7);
