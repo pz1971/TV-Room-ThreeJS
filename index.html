@@ -1,156 +1,281 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<title>My first three.js app</title>
-		<style>
-			body { margin: 0; }
-		</style>
-	</head>
-	<body>
-		<script src="node_modules/three/build/three.js"></script>
-		<script>
-			const scene = new THREE.Scene();
-			scene.background = new THREE.Color( 0xffffff );
-			const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-			camera.position.z = 15;
+  <head>
+    <meta charset="utf-8" />
+    <title>My first three.js app</title>
+    <style>
+      body {
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="node_modules\three\build\three.js"></script>
+    <script>
+      var vec = new THREE.Vector3(); // create once and reuse
+      var pos = new THREE.Vector3(); // create once and reuse
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0xffffff);
+      const camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+      );
+      camera.position.z = 15;
 
-			const renderer = new THREE.WebGLRenderer();
-			renderer.setSize( window.innerWidth, window.innerHeight );
-			document.body.appendChild( renderer.domElement );
+      const renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
 
-			const render = () => {
-				renderer.render( scene, camera );
-			}
-			
-			const create_tv = () => {
-				// creates the tv
+      const render = () => {
+        renderer.render(scene, camera);
+      };
 
-				// tv body
-				const tv_body_geometry = new THREE.BoxGeometry( 7.1,4.1,0.3 );
-				const tv_body_material = new THREE.MeshBasicMaterial( { color: 0x161616 } );
-				const tv_body = new THREE.Mesh( tv_body_geometry, tv_body_material );
-				// tv screen with texture
-				const tv_screen_geometry = new THREE.PlaneGeometry( 6.7, 3.7 );
-				const tv_screen_texture = new THREE.TextureLoader().load('./images/wallpaper.png', render);
-				const tv_screen_material = new THREE.MeshBasicMaterial({ map: tv_screen_texture });
-				const tv_screen = new THREE.Mesh( tv_screen_geometry, tv_screen_material );
-				
-				tv_body.position.z = -0.16
-				tv_body.attach(tv_screen)
-				// console.log(tv_body)
-				return tv_body
-			}
+      const create_room = () => {
+        const geometry = new THREE.BoxGeometry(40, 15, 40);
 
-			const create_tv_stand = () => {
-				var geometry = new THREE.CylinderGeometry( 0.3, 0.3, 8, 50 );
-				var material = new THREE.MeshBasicMaterial( {map: new THREE.TextureLoader().load('./images/stand_texture.jpg', render)} );
-				const cylinder1 = new THREE.Mesh( geometry, material );
-				cylinder1.position.y -= 4
-				
-				geometry = new THREE.CylinderGeometry( 0.3, 0.3, 3.5, 50 );
-				const cylinder2 = new THREE.Mesh( geometry, material );
-				cylinder2.position.y -= 6.4
-				cylinder2.position.x -= 3
-				cylinder1.attach(cylinder2)
-				
-				const cylinder3 = cylinder2.clone()
-				cylinder3.position.y -= 4
-				cylinder3.position.x += 6
-				cylinder1.attach(cylinder3)
+        const material = new THREE.MeshStandardMaterial({
+          map: new THREE.TextureLoader().load("./images/RoomWallpaper.jpg"),
+        });
 
-				const cylinder4 = cylinder2.clone()
-				cylinder4.position.y -= 4
-				cylinder4.position.x += 6
-				cylinder4.position.z += 2
-				cylinder1.attach(cylinder4)
+        material.side = THREE.BackSide;
+        const room = new THREE.Mesh(geometry, material);
+        room.position.z = 5;
+        return room;
+      };
 
-				const cylinder5 = cylinder2.clone()
-				cylinder5.position.y -= 4
-				cylinder5.position.z += 2
-				cylinder1.attach(cylinder5)
+      const create_tv = () => {
+        // creates the tv
 
-				geometry = new THREE.CylinderGeometry( 0.3, 0.3, 2, 50 );
-				const cylinder6 = new THREE.Mesh( geometry, material );
-				cylinder6.position.x = 0
-				cylinder6.position.y = 0.15
-				cylinder6.position.z = 0.5
-				cylinder6.rotation.x += (3.14156 / 2) // 90 degree
-				cylinder1.attach(cylinder6)
-				
-				var material = new THREE.MeshBasicMaterial( {	color: 0x3f3f3f,
-																transparent: true,
-																opacity: 0.7 } );
-				geometry = new THREE.BoxGeometry( 8, 0.2, 4 ) ;
-				const base1 = new THREE.Mesh( geometry, material )
-				base1.position.y -= 5
-				base1.position.z += 1
-				cylinder1.attach(base1)
+        // tv body
+        const tv_body_geometry = new THREE.BoxGeometry(7.1, 4.1, 0.3);
+        const tv_body_material = new THREE.MeshStandardMaterial({
+          color: 0x161616,
+        });
+        const tv_body = new THREE.Mesh(tv_body_geometry, tv_body_material);
+        // tv screen with texture
+        const tv_screen_geometry = new THREE.PlaneGeometry(6.7, 3.7);
+        const tv_screen_texture = new THREE.TextureLoader().load(
+          "./images/wallpaper.png",
+          render
+        );
+        const tv_screen_material = new THREE.MeshBasicMaterial({
+          map: tv_screen_texture,
+        });
+        const tv_screen = new THREE.Mesh(
+          tv_screen_geometry,
+          tv_screen_material
+        );
 
-				const base2 = base1.clone()
-				base2.position.y -= 6
-				cylinder1.attach(base2)
+        tv_body.position.z = -0.16;
+        tv_body.attach(tv_screen);
+        // console.log(tv_body)
+        return tv_body;
+      };
 
-				return cylinder1
-			}
-			
-			const tv = create_tv ()
-			tv.castShadow = true
-			scene.add( tv )
-			tv.position.z = 1.5
-			
-			const tv_stand = create_tv_stand()
-			tv_stand.castShadow = true
-			scene.add( tv_stand )
+      const create_tv_stand = () => {
+        var geometry = new THREE.CylinderGeometry(0.3, 0.3, 8, 50);
+        var material = new THREE.MeshStandardMaterial({
+          map: new THREE.TextureLoader().load(
+            "./images/stand_texture.jpg",
+            render
+          ),
+        });
+        const cylinder1 = new THREE.Mesh(geometry, material);
+        cylinder1.position.y -= 4;
 
-			render()
-			
-			document.onkeydown = (e) => {
-				e = e || window.event
-				if (e.keyCode == '38') {
-					// up arrow
-					var direction = new THREE.Vector3();
-					camera.getWorldDirection( direction );
-					distance = 0.1;
-					camera.position.add( direction.multiplyScalar(distance) );
-				}
-				else if (e.keyCode == '40') {
-					// down arrow
-					var direction = new THREE.Vector3();
-					camera.getWorldDirection( direction );
-					distance = -0.1;
-					camera.position.add( direction.multiplyScalar(distance) );
-				}
-				else if (e.keyCode == '37') {
-				// left arrow
-					camera.rotation.y += 0.1
-				}
-				else if (e.keyCode == '39') {
-					// right arrow
-					camera.rotation.y -= 0.1
-				}
-				renderer.render( scene, camera );
-			}
-			
-			var tv_anime_frame = 0
-			var skip = 0
-			const animate_tv_screen = () => {
-				if(skip == 5){
-					tv_anime_frame = (tv_anime_frame + 1) % 36
-					skip = 0
-				}
-				else{
-					skip++
-				}
+        geometry = new THREE.CylinderGeometry(0.3, 0.3, 3.5, 50);
+        const cylinder2 = new THREE.Mesh(geometry, material);
+        cylinder2.position.y -= 6.4;
+        cylinder2.position.x -= 3;
+        cylinder1.attach(cylinder2);
 
-				requestAnimationFrame( animate_tv_screen );
-				
-				var imgSrc = './images/tobeyDance/_a_frm' + tv_anime_frame + ',60.png'
-				tv.children[0].material.map = new THREE.TextureLoader().load(imgSrc, render);
-			};
+        const cylinder3 = cylinder2.clone();
+        cylinder3.position.y -= 4;
+        cylinder3.position.x += 6;
+        cylinder1.attach(cylinder3);
 
-			// animate_tv_screen();
-			
-		</script>
-	</body>
+        const cylinder4 = cylinder2.clone();
+        cylinder4.position.y -= 4;
+        cylinder4.position.x += 6;
+        cylinder4.position.z += 2;
+        cylinder1.attach(cylinder4);
+
+        const cylinder5 = cylinder2.clone();
+        cylinder5.position.y -= 4;
+        cylinder5.position.z += 2;
+        cylinder1.attach(cylinder5);
+
+        geometry = new THREE.CylinderGeometry(0.3, 0.3, 2, 50);
+        const cylinder6 = new THREE.Mesh(geometry, material);
+        cylinder6.position.x = 0;
+        cylinder6.position.y = 0.15;
+        cylinder6.position.z = 0.5;
+        cylinder6.rotation.x += 3.14156 / 2; // 90 degree
+        cylinder1.attach(cylinder6);
+
+        var material = new THREE.MeshStandardMaterial({
+          color: 0x3f3f3f,
+          transparent: true,
+          opacity: 0.7,
+        });
+        geometry = new THREE.BoxGeometry(8, 0.2, 4);
+        const base1 = new THREE.Mesh(geometry, material);
+        base1.position.y -= 5;
+        base1.position.z += 1;
+        cylinder1.attach(base1);
+
+        const base2 = base1.clone();
+        base2.position.y -= 6;
+        cylinder1.attach(base2);
+
+        return cylinder1;
+      };
+
+      const create_light = () => {
+        bulbLight = new THREE.PointLight(0xffffff, 1, 100, 2);
+
+        return bulbLight;
+      };
+
+      const tv = create_tv();
+      tv.castShadow = true;
+      scene.add(tv);
+      tv.position.z = 1.5;
+
+      const tv_stand = create_tv_stand();
+      tv_stand.castShadow = true;
+      scene.add(tv_stand);
+
+      tv_stand.attach(tv);
+      tv_stand.position.z -= 5;
+
+      const room = create_room();
+      room.castShadow = true;
+      scene.add(room);
+
+      var bulbLight = create_light();
+      bulbLight.position.set(0, 2, 0);
+      bulbLight.castShadow = true;
+      scene.add(bulbLight);
+
+      render();
+
+      // Jinish Bhai
+      //bulbLight.position.set(bulbLight.position.x+=1, 0, 0);
+
+      const isInsideRoom = (x, y, z) => {
+        var limitLoX = -18;
+        var limitHiX = 18;
+        var limitLoY = -7;
+        var limitHiY = 7;
+        var limitLoZ = -15;
+        var limitHiZ = 17;
+
+        return (
+          x >= limitLoX &&
+          x <= limitHiX &&
+          y >= limitLoY &&
+          y <= limitHiY &&
+          z >= limitLoZ &&
+          z <= limitHiZ
+        );
+      };
+
+      document.addEventListener("mousemove", function (event) {
+        vec.set(
+          (event.clientX / window.innerWidth) * 2 - 1,
+          -(event.clientY / window.innerHeight) * 2 + 1,
+          0.5
+        );
+
+        vec.unproject(camera);
+
+        vec.sub(camera.position).normalize();
+
+        var distance = -camera.position.z / vec.z;
+        pos.copy(camera.position).add(vec.multiplyScalar(distance));
+
+        if (isInsideRoom(pos.x, pos.y, pos.z)) {
+          bulbLight.position.x = pos.x;
+          bulbLight.position.y = pos.y;
+          bulbLight.position.z = pos.z;
+          renderer.render(scene, camera);
+        }
+      });
+
+      document.onkeydown = (e) => {
+        e = e || window.event;
+
+        if (e.keyCode == "38") {
+          // up arrow
+
+          var direction = new THREE.Vector3();
+          var limitLoX = -18;
+          var limitHiX = 18;
+          var limitLoY = -7;
+          var limitHiY = 7;
+          var limitLoZ = -15;
+          var limitHiZ = 17;
+
+          camera.getWorldDirection(direction);
+          distance = 0.3;
+          var move = direction.multiplyScalar(distance);
+          console.log(move.x + camera.position.x);
+          if (
+            isInsideRoom(
+              move.x + camera.position.x,
+              move.y + camera.position.y,
+              move.z + camera.position.z
+            )
+          )
+            camera.position.add(move);
+        } else if (e.keyCode == "40") {
+          // down arrow
+          var direction = new THREE.Vector3();
+          camera.getWorldDirection(direction);
+          distance = -0.3;
+          var move = direction.multiplyScalar(distance);
+          if (
+            isInsideRoom(
+              move.x + camera.position.x,
+              move.y + camera.position.y,
+              move.z + camera.position.z
+            )
+          )
+            camera.position.add(move);
+        } else if (e.keyCode == "37") {
+          // left arrow
+          camera.rotation.y += 0.1;
+        } else if (e.keyCode == "39") {
+          // right arrow
+          camera.rotation.y -= 0.1;
+        }
+
+        renderer.render(scene, camera);
+      };
+
+      var tv_anime_frame = 0;
+      var skip = 0;
+      const animate_tv_screen = () => {
+        if (skip == 5) {
+          tv_anime_frame = (tv_anime_frame + 1) % 36;
+          skip = 0;
+        } else {
+          skip++;
+        }
+
+        requestAnimationFrame(animate_tv_screen);
+
+        var imgSrc = "./images/tobeyDance/_a_frm" + tv_anime_frame + ",60.png";
+        tv.children[0].material.map = new THREE.TextureLoader().load(
+          imgSrc,
+          render
+        );
+      };
+
+      animate_tv_screen();
+    </script>
+  </body>
 </html>
